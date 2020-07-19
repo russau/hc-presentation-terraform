@@ -1,3 +1,4 @@
+# internet gateway for internet access
 resource "aws_internet_gateway" "presentation-igw" {
     vpc_id = aws_vpc.presentation-vpc.id
     tags = {
@@ -5,6 +6,7 @@ resource "aws_internet_gateway" "presentation-igw" {
     }
 }
 
+# create a route table that sends everything to the IGW
 resource "aws_route_table" "presentation-public-crt" {
     vpc_id = aws_vpc.presentation-vpc.id
     
@@ -18,11 +20,13 @@ resource "aws_route_table" "presentation-public-crt" {
     }
 }
 
+# associate route table with subnet
 resource "aws_route_table_association" "presentation-crta-public-subnet-1"{
     subnet_id = aws_subnet.presentation-subnet-public-1.id
     route_table_id = aws_route_table.presentation-public-crt.id
 }
 
+# security group for the webserver
 resource "aws_security_group" "web-open" {
     vpc_id = aws_vpc.presentation-vpc.id
     

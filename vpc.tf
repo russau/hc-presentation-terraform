@@ -1,3 +1,4 @@
+# vpc network
 resource "aws_vpc" "presentation-vpc" {
     cidr_block = "10.0.0.0/16"
     enable_dns_support = "true"
@@ -8,6 +9,7 @@ resource "aws_vpc" "presentation-vpc" {
     }
 }
 
+# public subnet
 resource "aws_subnet" "presentation-subnet-public-1" {
     vpc_id = aws_vpc.presentation-vpc.id
     cidr_block = "10.0.1.0/24"

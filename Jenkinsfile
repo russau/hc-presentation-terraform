@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh 'terraform init'
                 sh 'terraform plan -var "region=${DEST_REGION}"'
-                sh 'terraform apply -var "region=${DEST_REGION}"'
+                sh 'terraform apply -var "region=${DEST_REGION}" --auto-approve'
             }
         }
     }

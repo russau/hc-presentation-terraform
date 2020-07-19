@@ -20,4 +20,9 @@ pipeline {
             }
         }
     }
+    post {
+      always {
+          copyArtifacts(projectName: 'hc-presentation-packer');
+      }
+    }
 }

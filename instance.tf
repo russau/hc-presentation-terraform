@@ -15,3 +15,12 @@ resource "aws_instance" "web1" {
     subnet_id = aws_subnet.presentation-subnet-public-1.id
     vpc_security_group_ids = [ aws_security_group.web-open.id ]
 }
+
+resource "aws_eip" "web_eip" {
+  instance = aws_instance.web1.id
+  vpc      = true
+}
+
+output "web_ip_addr" {
+  value = aws_eip.web_eip.public_ip
+}

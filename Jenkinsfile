@@ -2,6 +2,7 @@ pipeline {
     agent any
     options {
         ansiColor('xterm')
+        copyArtifactPermission('hc-presentation-packer');
     }
     parameters {
         string(name: 'DEST_REGION', defaultValue: 'ap-southeast-2', description: 'Destination Region')
@@ -19,10 +20,5 @@ pipeline {
                 archiveArtifacts artifacts: 'certs/**'
             }
         }
-    }
-    post {
-      always {
-          copyArtifacts(projectName: 'hc-presentation-packer');
-      }
     }
 }

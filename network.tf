@@ -22,3 +22,17 @@ resource "aws_route_table_association" "presentation-crta-public-subnet-1"{
     subnet_id = aws_subnet.presentation-subnet-public-1.id
     route_table_id = aws_route_table.presentation-public-crt.id
 }
+
+resource "aws_security_group" "web-open" {
+    vpc_id = aws_vpc.presentation-vpc.id
+    
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags = {
+        Name = "web-open"
+    }
+}

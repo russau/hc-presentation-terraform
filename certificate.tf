@@ -45,14 +45,14 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
 }
 
 # role can decrypt the private key
-resource "aws_iam_role" "instance_decrypt" {
-  name               = "instance_role"
-  assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
+resource "aws_iam_role" "cert_decrypt_role" {
+  name               = "cert_decrypt_role_${var.region}"
+  assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 }
 
-resource "aws_iam_role_policy" "test_policy" {
-  name = "key_policy"
-  role = aws_iam_role.instance_decrypt.id
+resource "aws_iam_role_policy" "cert_decrypt_policy" {
+  name = "cert_decrypt_policy_${var.region}"
+  role = aws_iam_role.cert_decrypt_role.id
 
   policy = <<-EOF
   {

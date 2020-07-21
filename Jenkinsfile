@@ -10,13 +10,16 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                // we want a workspace per region, create one if we don't already have one
+                sh 'terraform workspace list | grep -q ${DEST_REGION} || terraform workspace new ${DEST_REGION}'
+                sh 'terraform workspace select ${DEST_REGION}'
                 sh 'terraform init'
                 sh 'terraform plan -var "region=${DEST_REGION}"'
                 sh 'terraform apply -var "region=${DEST_REGION}" --auto-approve'
-                sh 'mkdir certs || true'
-                sh 'terraform output web_cert_private_key_ciphertext | base64 --decode > certs/web_cert_private_key_ciphertext.bin'
-                sh 'terraform output web_issuer_pem > certs/web_issuer.pem'
-                sh 'terraform output web_certificate_pem > certs/web_certificate.pem'
+                sh 'mkdir certs/${DEST_REGION} || true'
+                sh 'terraform output web_cert_private_key_ciphertext | base64 --decode > certs/${DEST_REGION}/web_cert_private_key_ciphertext.bin'
+                sh 'terraform output web_issuer_pem > certs/${DEST_REGION}/web_issuer.pem'
+                sh 'terraform output web_certificate_pem > certs/${DEST_REGION}/web_certificate.pem'
                 archiveArtifacts artifacts: 'certs/**'
             }
         }

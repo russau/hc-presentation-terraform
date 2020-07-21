@@ -31,7 +31,7 @@ resource "aws_eip" "web_eip" {
 # create an A record
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "tls.${data.aws_route53_zone.selected.name}"
+  name    = "${var.region}.${data.aws_route53_zone.selected.name}"
   type    = "A"
   ttl     = "300"
   records = [ aws_eip.web_eip.public_ip ]

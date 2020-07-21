@@ -12,7 +12,7 @@ resource "acme_registration" "reg" {
 # request a cert from Let's Encrypt, a TXT record on route 53 is used for domain verification
 resource "acme_certificate" "certificate" {
   account_key_pem           = acme_registration.reg.account_key_pem
-  common_name               = "tls.beta-seattle.net"
+  common_name               = aws_route53_record.www.fqdn
 
   dns_challenge {
     provider = "route53"

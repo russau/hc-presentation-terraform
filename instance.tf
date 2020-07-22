@@ -1,5 +1,6 @@
 # find the newest nginx-demo ami
 data "aws_ami" "nginx-demo" {
+  count = var.create_instance ? 1 : 0
   most_recent      = true
   owners           = ["self"]
 
@@ -16,13 +17,14 @@ data "aws_route53_zone" "selected" {
 
 # instance profile to add the decrypt role
 resource "aws_iam_instance_profile" "decrypt_profile" {
-  name = "decrypt_profile"
+  name = "decrypt_profile_${var.region}"
   role = aws_iam_role.cert_decrypt_role.name
 }
 
 # create our web server
 resource "aws_instance" "web1" {
-    ami = data.aws_ami.nginx-demo.id
+    count = var.create_instance ? 1 : 0
+    ami = data.aws_ami.nginx-demo[count.index].id
     instance_type = "t2.micro"
     iam_instance_profile = aws_iam_instance_profile.decrypt_profile.name
     subnet_id = aws_subnet.presentation-subnet-public-1.id
@@ -31,23 +33,17 @@ resource "aws_instance" "web1" {
 
 # associate an elastic IP
 resource "aws_eip" "web_eip" {
-  instance = aws_instance.web1.id
+  count = var.create_instance ? 1 : 0
+  instance = aws_instance.web1[count.index].id
   vpc      = true
 }
 
 # create an A record
 resource "aws_route53_record" "www" {
+  count = var.create_instance ? 1 : 0
   zone_id = data.aws_route53_zone.selected.zone_id
   name    = "${var.region}.${data.aws_route53_zone.selected.name}"
   type    = "A"
   ttl     = "300"
-  records = [ aws_eip.web_eip.public_ip ]
-}
-
-# output a link to the web server and the AMI used
-output "web_ip_addr" {
-  value = "http://${aws_route53_record.www.fqdn}"
-}
-output "web_ami_id" {
-  value = data.aws_ami.nginx-demo.id
+  records = [ aws_eip.web_eip[count.index].public_ip ]
 }
